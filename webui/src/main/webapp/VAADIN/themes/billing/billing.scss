@@ -1,0 +1,26 @@
+//
+//	This file is in use when developing under eclipse
+//
+
+// $v-background-color: hsl(200, 50%, 50%);
+// $v-focus-color: hsl(280, 80%, 60%);
+
+//$v-focus-color: #9250A7;	// purple
+$v-focus-color: #287e58;	// green
+//$v-focus-color: #197de1; 	// blue
+
+@import "../valo/valo";
+@import "views/login";
+@import "views/newinvoice";
+
+@mixin billing {
+  @include valo;
+  @include billing-login-view;
+  @include newinvoice-view;
+
+/*
+  .v-background-color {
+    color: red;
+  }
+  */
+}

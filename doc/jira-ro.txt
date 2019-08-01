@@ -1,0 +1,3 @@
+GRANT select ON jira.* TO 'jira_ro'@'localhost' IDENTIFIED by 'jira_ro';
+GRANT select ON jira.* TO 'jira_ro'@'192.168.101.0/255.255.255.0' IDENTIFIED by 'jira_ro';
+flush privileges;

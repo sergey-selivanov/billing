@@ -1,0 +1,16 @@
+@mixin newinvoice-view {
+    .v-grid-row.dead td {
+        color: gray;
+        text-decoration: line-through;
+    }
+
+    .v-grid-column-header-content {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .v-grid-column-footer-content {
+        font-weight: bold;
+        font-size: 16px;
+    }
+}

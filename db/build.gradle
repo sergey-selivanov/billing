@@ -1,0 +1,45 @@
+/**
+ *    To properly substitute options, invoke specifying target environment: -PenvironmentName=mistral
+ *    To apply repeatable scripts from sq-migrations-dev, add -Pdevsql
+ *
+ *    gradle -PenvironmentName=mistral flywayInfo
+ *    gradle -PenvironmentName=mistral -Pdevsql flywayMigrate
+ *
+ */
+
+buildscript {
+    repositories {
+/*        maven {
+            url "${artifactory_contextUrl}/libs-release"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }*/
+        //mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-properties-plugin:1.4.6'
+        classpath 'org.flywaydb:flyway-gradle-plugin:5.1.4'
+        classpath 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
+    }
+}
+
+apply plugin: 'net.saliman.properties'
+apply plugin: 'org.flywaydb.flyway'
+
+flyway {
+    url = project.'deploy.db.url'
+    user = project.'deploy.db.login'
+    password = project.'deploy.db.password'
+
+    if (project.hasProperty('devsql')) {
+        locations = ["filesystem:${projectDir}/sql-migrations", "filesystem:${projectDir}/sql-migrations-dev"]
+    }
+    else {
+        locations = ["filesystem:${projectDir}/sql-migrations"]
+    }
+
+}

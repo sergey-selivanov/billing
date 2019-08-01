@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+    <entry key="update_projects_with_customers">
+update Project p
+inner join Customer c on p.originalCustomerId = c.originalId
+set p.customerId = c.id
+where p.customerId is null
+    </entry>
+
+<entry key="projectcounts">
+select
+    c.id,
+    c.originalId,
+    count(p.id) as project_count
+from Customer c
+join Project p on p.customerId = c.id
+group by c.id, c.originalId
+</entry>
+
+</properties>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+    <entry key="client_by_project">
+select
+    c.ClientID,
+    c.CompanyName,
+    coalesce(a.AddressLine1, '') as addr1,
+    coalesce(a.AddressLine2, '') as addr2,
+    coalesce(a.City, '') as city,
+    rtrim(coalesce(cast(sp.StateProvinceCode as varchar), '')) as state, -- no dialect mapping for jdbc type -15
+    coalesce(a.ZipCode, '') as zip
+from Client c
+left join Project p on p.ClientID = c.ClientID
+left join ClientAddress a on a.ClientID = c.ClientID
+left join StateProvince sp on sp.StateProvinceID = a.StateProvinceID
+where p.ProjectID = ?1
+    </entry>
+
+<entry key="customer_list">
+select
+    c.ClientID,
+    c.CompanyName,
+    coalesce(a.AddressLine1, '') as addr1,
+    coalesce(a.AddressLine2, '') as addr2,
+    coalesce(a.City, '') as city,
+    rtrim(coalesce(cast(sp.StateProvinceCode as varchar), '')) as state, --    no dialect mapping for jdbc type -15
+    coalesce(a.ZipCode, '') as zip,
+    coalesce(c.Comments, '')
+from Client c
+left join ClientAddress a on a.ClientID = c.ClientID
+left join StateProvince sp on sp.StateProvinceID = a.StateProvinceID
+</entry>
+
+<entry key="work_hours"><![CDATA[
+select
+    wh.WorkHoursRowID,
+    wh.Hours,    -- decimal: 1.5
+    wh.Description,
+    wh.Date,
+    pu.ProjectUnitID,
+    -- pu.Name,
+    replace(pu.Name, char(9), ' ') as Name,
+    p.ProjectID,
+    p.Name as projectName,
+    -- case when puParent.Name is null then pu.Name else puParent.Name + ': ' + pu.Name end as puName
+    replace(case when puParent.Name is null then pu.Name else puParent.Name + ': ' + pu.Name end, char(9), ' ') as puName
+from WorkHours wh
+left join ProjectUnit pu on pu.ProjectUnitID = wh.ProjectUnitID
+left join Project p on p.ProjectID = pu.ProjectID
+left join ProjectUnit puParent on pu.ParentProjectUnitID = puParent.ProjectUnitID
+where
+    p.ProjectID = ?1
+    and wh.Date >= ?2
+    and wh.Date <= ?3
+]]>
+</entry>
+
+<entry key="last_work_report">
+select
+    max(Date)
+from WorkHours wh
+left join ProjectUnit pu on pu.ProjectUnitID = wh.ProjectUnitID
+where pu.ProjectID = ?1
+</entry>
+
+</properties>

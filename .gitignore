@@ -1,0 +1,9 @@
+.project
+/server@tmp
+/webui@tmp
+.gradle/
+.settings/
+gradle-local.properties
+.classpath
+build/
+bin/

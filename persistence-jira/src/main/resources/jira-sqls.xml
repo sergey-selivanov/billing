@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+<entry key="projects"><![CDATA[
+select
+    a.CREATED,
+--    a.SUMMARY,
+    p.pname,
+    p.ID
+from audit_log a
+left join project p on p.ID = a.OBJECT_ID
+where SUMMARY = 'Project created'
+and p.ID is not null
+and a.CREATED > ?1
+order by a.CREATED desc
+]]>
+</entry>
+
+<entry key="worklog"><![CDATA[
+select
+    wl.ID,
+    wl.timeworked,    -- seconds: 1800 for 30 min
+    wl.worklogbody,
+    wl.STARTDATE,
+    i.ID as issueId,
+    i.SUMMARY,
+    p.ID as projectId,
+    p.pname,
+    concat(p.pkey, '-', i.issuenum) as issueLabel
+from worklog wl
+left join jiraissue i on i.ID = wl.issueid
+left join project p on p.ID = i.PROJECT
+where
+    p.ID = ?1
+    and wl.STARTDATE >= ?2
+    and wl.STARTDATE <= ?3
+]]>
+</entry>
+
+<entry key="last_work_report">
+select
+    max(STARTDATE)
+from worklog wl
+left join jiraissue i on i.ID = wl.issueid
+left join project p on p.ID = i.PROJECT
+where
+    p.ID = ?1
+</entry>
+
+
+</properties>

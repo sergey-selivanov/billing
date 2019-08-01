@@ -1,0 +1,41 @@
+How to store date, time, and timestamps in UTC time zone with JDBC and Hibernate
+
+https://vladmihalcea.com/2017/03/14/how-to-store-date-time-and-timestamps-in-utc-time-zone-with-jdbc-and-hibernate/
+http://in.relation.to/2016/09/12/jdbc-time-zone-configuration-property/
+
+https://hibernate.atlassian.net/browse/HHH-11396?attachmentSortBy=fileName
+https://github.com/javaee/jpa-spec/issues/156
+
+https://vladmihalcea.com/whats-new-in-jpa-2-2-java-8-date-and-time-types/
+
+
+
+Embedding Graphics in Jaspersoft Report Files
+
+https://dltj.org/article/embedding-graphics-in-jaspersoft-report-files/
+
+
+
+Best practice for REST token-based authentication with JAX-RS and Jersey
+
+https://stackoverflow.com/questions/26777083/best-practice-for-rest-token-based-authentication-with-jax-rs-and-jersey
+https://github.com/Posya/wiki/blob/master/best-practice-for-rest-token-based-authentication-with-jax-rs-and-jersey.adoc
+https://github.com/cassiomolin/jersey-jwt
+
+
+
+REST
+
+https://restfulapi.net/rest-put-vs-post/
+http://www.restapitutorial.com/lessons/httpmethods.html
+
+
+
+
+LDAP, OpenDJ
+
+https://marginnotes2.wordpress.com/2014/09/22/opendj-directory-server-groups/
+
+ldap search filters:
+https://docs.ldap.com/specs/rfc4515.txt
+

@@ -1,0 +1,153 @@
+apply plugin: 'war'
+apply plugin: 'findbugs'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'net.saliman.properties'
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+/*    maven {
+        url "${artifactory_contextUrl}/libs-release"
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }*/
+    jcenter()
+    maven { url "http://vaadin.com/nexus/content/repositories/vaadin-addons" }
+}
+
+
+dependencies {
+    //providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    providedCompile 'javax.servlet:javax.servlet-api:4.0.1'    // tomcat 9
+
+    compile project(':billing-common')
+
+    compile group: 'org.glassfish.jersey.core', name: 'jersey-client', version: '2.27'
+    compile 'org.glassfish.jersey.media:jersey-media-moxy:2.27'
+    compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
+
+
+    compile 'com.vaadin:vaadin-server:8.5.2'
+    compile 'com.vaadin:vaadin-themes:8.5.2'
+    compile 'com.vaadin:vaadin-client-compiled:8.5.2'
+
+    compile group: 'org.vaadin.addon', name: 'confirmdialog', version: '3.2.0'
+
+    compile 'com.google.guava:guava:26.0-jre'
+
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.1'
+    compile 'org.apache.logging.log4j:log4j-web:2.11.1'
+
+    testCompile 'junit:junit:4.12'
+}
+
+
+
+// Tomcat version 8.0 implements the Servlet 3.1 and JavaServer Pages 2.3
+// Tomcat version 9 implements Servlet 4.0, jsp 2.3
+eclipse {
+    wtp {
+        facet {
+          facet name: 'jst.web', version: '3.1'    // no 4.0 yet?
+          facet name: 'java', version: '1.8'
+          facet name: 'wst.jsdt.web', version: '1.0'
+        }
+    }
+}
+
+
+// set displayed revision from hudson env vars
+// run 'clean' in hudson build otherwise when resources up-to-date, will not be updated
+def val = System.getenv('BUILD_NUMBER')
+def bn = (val == null ? 'undefined' : val)
+def bnn = (val == null ? '0' : val)
+
+//val = System.getenv('BUILD_ID')
+//def bid = (val == null ? 'undefined' : val)
+
+val = System.getenv('USER');    // linux
+if(val == null){
+    val = System.getenv('USERNAME');    // linux under glassfish, windows
+}
+
+def builduser = (val == null ? 'undefined' : val)
+def buildhost = InetAddress.localHost.hostName
+
+//println 'branch: ' + repo.branch.current.name    // develop
+//println 'branch: ' + repo.branch.current.fullName    // refs/heads/develop
+
+println 'environment: ' + environmentName
+
+processResources {
+
+    filter(ReplaceTokens,
+        tokens:[
+            'git.commit': repo.head().abbreviatedId,
+            'git.date': repo.head().date.toString(),
+            'git.branch': repo.branch.current.name,
+            'build.date': new java.util.Date().toString(),
+            'build.host': builduser + '@' + buildhost,
+            'version': project.version.toString(),
+            'jenkins.build.number': bn,
+            'environment.name': environmentName
+            ])
+
+    exclude '**/options-template.properties'
+    exclude '**/options.properties'
+    exclude '**/options-jira.properties', '**/options-jobcard.properties'
+}
+
+task adjustEnvResources(type: Copy) { // TODO not needed, use filesMatching in processResources?
+
+    from project.sourceSets.main.resources
+    include 'options-template.properties'
+    into project.sourceSets.main.output.resourcesDir
+    filter(ReplaceTokens, tokens: project.filterTokens)
+    rename 'options-template.properties', 'options.properties'
+}
+
+compileJava.dependsOn adjustEnvResources
+
+war {
+    println "env name: " + environmentName
+    println "base name: " + baseName
+    println "extension: " + extension
+    println "version:" + version.toString()
+
+    archiveName = baseName + '-' + version.toString() + '-' + environmentName + '.' + extension
+
+    println "war archive name: " + archiveName
+
+//    with copySpec {
+//        //from 'src/main/webapp'
+//        filter(ReplaceTokens, tokens: project.filterTokens)
+//        rename 'billing-template.scss', 'billing.scss'
+//        exclude '**/billing.scss'
+//    }
+
+
+    exclude '**/billing.scss'
+
+    filesMatching('**/billing-template.scss') {
+        filter(ReplaceTokens, tokens: project.filterTokens)
+    }
+
+    rename 'billing-template.scss', 'billing.scss'
+}
+
+
+findbugs {
+    ignoreFailures = true
+    sourceSets = [ project.sourceSets.main ]
+//    excludeFilter = file("$projectDir/config/findbugs/excludeFilter.xml")
+}
+
+test {
+    // do not perform unit tests
+    exclude 'sssii/billing/**'
+}

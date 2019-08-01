@@ -1,0 +1,84 @@
+/**
+ * To properly substitute options, invoke specifying target environment: -PenvironmentName=mistral
+ *
+ * To make release and increase version, set stage final:
+
+ (looks like need to run this on one subproject, build says failed with just "release" but seems to make the tag anyway)
+
+ *
+ * gradle billing-common:release -Prelease.scope=patch -Prelease.stage=final
+ * gradle release -Prelease.scope=minor -Prelease.stage=final
+ * gradle release -Prelease.scope=major -Prelease.stage=final
+ *
+ * The change scope can be either MAJOR, MINOR, or PATCH
+ * The stage of the change corresponds to the development stage (such as dev, milestone, rc, final)
+ */
+
+buildscript {
+    repositories {
+/*        maven {
+            url "${artifactory_contextUrl}/libs-release"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }*/
+        //mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.ajoberstar:gradle-git:1.7.2'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
+        classpath 'net.saliman:gradle-properties-plugin:1.4.6'
+    }
+}
+
+//apply plugin: 'org.ajoberstar.release-opinion'
+//apply plugin: 'com.github.ben-manes.versions'
+
+import org.ajoberstar.grgit.*
+import org.ajoberstar.gradle.git.release.opinion.Strategies
+import org.apache.tools.ant.filters.ReplaceTokens
+
+
+
+ext.repo = Grgit.open(project.file('.'))
+
+allprojects {
+    repositories {
+/*        maven {
+            url "${artifactory_contextUrl}/libs-release"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }*/
+        jcenter()
+        //mavenCentral()
+    }
+
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'org.ajoberstar.release-opinion'
+
+    dependencyUpdates.resolutionStrategy = {
+        componentSelection { rules ->
+            rules.all { ComponentSelection selection ->
+                boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'b'].any { qualifier ->
+                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                }
+                if (rejected) {
+                    selection.reject('Release candidate')
+                }
+            }
+        }
+    }
+
+    release {
+        grgit = repo
+    }
+}
+
+subprojects{
+    apply plugin: 'eclipse'
+    //apply plugin: 'com.github.ben-manes.versions'
+}

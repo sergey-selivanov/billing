@@ -1,0 +1,14 @@
+rootProject.name = 'billing'
+
+include 'common', 'persistence-jc', 'persistence-jira', 'server', 'webui', 'db'
+//include 'billing-common', 'billing-jobcard'
+
+
+//project(':billing-common').projectDir = file('common')
+//project(':billing-jobcard').projectDir = file('persistence-jc')
+
+project(':common').name = 'billing-common'
+project(':persistence-jc').name = 'billing-jobcard'
+project(':persistence-jira').name = 'billing-jira'
+project(':server').name = 'billing-server'
+project(':webui').name = 'billing-web'
