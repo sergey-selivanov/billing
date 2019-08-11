@@ -1,0 +1,7 @@
+https://onemoretech.wordpress.com/2012/03/29/opendj-cheat-sheet/
+
+--------------------------------------------
+
+
+JasperReports Server and LDAP
+http://community.jaspersoft.com/documentation/tibco-jasperreports-server-authentication-cookbook/v610/introduction

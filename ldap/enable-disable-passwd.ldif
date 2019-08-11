@@ -1,0 +1,8 @@
+
+#
+# https://marginnotes2.wordpress.com/2011/07/21/opendj-using-pre-encoded-passwords/
+#
+# enable inserting passwords:
+# dsconfig set-password-policy-prop --policy-name "Default Password Policy" --set allow-pre-encoded-passwords:true --trustAll --hostname localhost --port 4444 --bindDN "cn=Directory Manager" --bindPassword Q1w2e3r4t5
+# dsconfig set-password-policy-prop --policy-name "Default Password Policy" --set allow-pre-encoded-passwords:false --trustAll --hostname localhost --port 4444 --bindDN "cn=Directory Manager" --bindPassword Q1w2e3r4t5
+

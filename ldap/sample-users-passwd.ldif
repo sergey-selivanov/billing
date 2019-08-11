@@ -1,0 +1,22 @@
+# ldapmodify --defaultAdd --hostname localhost --port 1389 --bindDN "cn=Directory Manager" --bindPassword password --filename users-passwd.ldif
+
+
+#
+#   ldif updates
+#   https://access.redhat.com/documentation/en-US/Red_Hat_Directory_Server/8.2/html/Administration_Guide/Creating_Directory_Entries-LDIF_Update_Statements.html
+#
+
+#
+#   encode-password -l
+#   encode-password -s SSHA -c password
+#   svs:        "{SSHA}0ZyYYRUYENnsc3csqIYP1dvRtG8nJavZfK3Hjg=="
+#
+
+dn: cn=svs,ou=People,dc=example,dc=com
+changetype: modify
+replace: userPassword
+userPassword: {SSHA}0ZyYYRUYENnsc3csqIYP1dvRtG8nJavZfK3Hjg==
+
+
+# authPassword attribute is designed to store passwords hashed by the client application.
+

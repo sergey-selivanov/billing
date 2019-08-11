@@ -1,0 +1,22 @@
+# ldapmodify --defaultAdd --hostname localhost --port 1389 --bindDN "cn=Directory Manager" --bindPassword password --filename adduser.ldif
+
+# new user
+
+dn: cn=svs,ou=People,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+givenName: Sergey
+uid: svs
+cn: svs
+sn: Selivanov
+mail: svs@3si2.com
+
+# add to group
+
+dn: cn=Developers,ou=Groups,dc=example,dc=com
+changetype: modify
+add: member
+member: cn=svs,ou=People,dc=example,dc=com
+-

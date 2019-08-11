@@ -1,0 +1,24 @@
+# service accounts
+
+dn: ou=Service,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: Service
+
+# set password manually to this:
+
+dn: cn=application,ou=Service,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+sn: Application
+cn: application
+
+
+dn: ou=People,dc=example,dc=com
+changetype: modify
+add: aci
+aci: (target = "ldap:///cn=*,ou=People,dc=example,dc=com")
+ (targetattr = "uid")
+ (version 3.0; acl "application read-write access"; allow (read,write,search,compare) userdn="ldap:///cn=application,ou=Service,dc=example,dc=com";)

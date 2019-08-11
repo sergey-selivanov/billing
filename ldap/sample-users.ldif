@@ -1,0 +1,63 @@
+# ldapmodify --defaultAdd --hostname localhost --port 1389 --bindDN "cn=Directory Manager" --bindPassword password --filename users.ldif
+
+# first create base dn dc=example,dc=com
+
+
+# ===== Org units and groups
+
+dn: ou=Groups,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=People,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: People
+
+dn: cn=Developers,ou=Groups,dc=example,dc=com
+objectClass: groupOfNames
+objectClass: top
+cn: Developers
+
+dn: cn=Managers,ou=Groups,dc=example,dc=com
+objectClass: groupOfNames
+objectClass: top
+cn: Managers
+
+# ===== Users
+
+dn: cn=svs,ou=People,dc=example,dc=com
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: top
+givenName: Sergey
+sn: Selivanov
+cn: svs
+uid: svs
+mail: svs@example.com
+
+
+
+# ===== Group membership
+
+dn: cn=Developers,ou=Groups,dc=example,dc=com
+changetype: modify
+add: member
+member: cn=svs,ou=People,dc=example,dc=com
+# member: cn=maska,ou=People,dc=example,dc=com
+# member: cn=s0vin,ou=People,dc=example,dc=com
+-
+
+
+
+# ===== Self-service
+# see opendj admin guide, 6.1.3, ldap:///self
+
+dn: ou=People,dc=example,dc=com
+changetype: modify
+add: aci
+aci: (target = "ldap:///cn=*,ou=People,dc=example,dc=com")
+ (targetattr = "objectClass||userPassword||authPassword")
+ (version 3.0; acl "self update"; allow (read,write,search,compare) userdn="ldap:///self";)
